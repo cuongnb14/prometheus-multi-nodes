@@ -25,6 +25,7 @@ docker-compose up -d
 ```
 wget https://raw.githubusercontent.com/cuongnb14/prometheus-multi-nodes/master/docker-compose.exporter.yml -O docker-compose.yml
 
+# Note: update hostname for containers to display in dashboard
 docker-compose up -d
 ```
 
