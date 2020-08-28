@@ -1,0 +1,20 @@
+---
+# - name: Setup Center servers
+#   hosts: test01
+#   become: yes
+
+#   roles:
+#     - { 
+#       role: user,
+#       username: ubuntu1,
+#     }
+  
+- name: Setup Exporter servers
+  hosts: exporter
+  become: yes
+
+  roles:
+    - { 
+      role: prometheus-exporter,
+    }
+  

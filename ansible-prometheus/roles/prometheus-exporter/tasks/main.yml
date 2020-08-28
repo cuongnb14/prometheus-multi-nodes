@@ -1,0 +1,38 @@
+- name: Install pip3
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - python3-pip
+  
+- pip:
+    name: docker
+
+- name: Start nodeexporter container
+  docker_container:
+    name: nodeexporter
+    image: quay.io/prometheus/node-exporter:v1.0.1
+    restart_policy: always
+    network_mode: "host"
+    pid_mode: "host"
+    hostname: "{{ ansible_hostname }}"
+    volumes:
+      - "/:/host:ro,rslave"
+    ports:
+      - 9100:9100
+    command: ["--path.rootfs=/host"]
+
+- name: Start cadvisor container
+  docker_container:
+    name: cadvisor
+    image: gcr.io/google-containers/cadvisor:v0.36.0
+    restart_policy: always
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker:/var/lib/docker:ro
+      - /cgroup:/cgroup:ro # doesn't work on MacOS only for Linux
+    hostname: "{{ ansible_hostname }}"
+    ports:
+      - 9200:8080
