@@ -1,0 +1,63 @@
+- name: Install pip3
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - python3-pip
+
+- pip:
+    name: docker
+
+- name: Create traefik-net network
+  docker_network:
+    name: traefik-net
+
+- name: Ensures monitor-conf dir exists
+  file: path=/monitor-conf/prometheus state=directory recurse=yes
+
+- name: Ensures monitor-conf dir exists
+  file: path=/monitor-conf/grafana state=directory recurse=yes
+
+- name: Sync bin directory
+  synchronize:
+    src: ../templates/grafana
+    dest: /monitor-conf
+    checksum: yes
+
+- name: Create prometheus config file
+  template:
+    src: prometheus.yml.j2
+    dest: /monitor-conf/prometheus/prometheus.yml
+
+- name: Start prometheus container
+  docker_container:
+    name: prometheus
+    image: quay.io/prometheus/prometheus:v2.20.1
+    restart_policy: always
+    networks:
+      - name: "traefik-net"
+    hostname: "prometheus"
+    volumes:
+      - /monitor-conf/prometheus:/etc/prometheus
+      - prometheus_data:/prometheus
+    ports:
+      - 127.0.0.1:9090:9090
+    command: "--config.file=/etc/prometheus/prometheus.yml --storage.tsdb.path=/prometheus --web.console.libraries=/etc/prometheus/console_libraries --web.console.templates=/etc/prometheus/consoles --storage.tsdb.retention.time=200h --web.enable-lifecycle"
+
+- name: Start grafana container
+  docker_container:
+    name: grafana
+    image: grafana/grafana:7.1.5
+    restart_policy: always
+    networks:
+      - name: "traefik-net"
+    hostname: "grafana"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - /monitor-conf/grafana/provisioning:/etc/grafana/provisioning
+    ports:
+      - 3000:3000
+    env:
+      GF_SECURITY_ADMIN_USER: "admin"
+      GF_SECURITY_ADMIN_PASSWORD: "admin"
+      GF_USERS_ALLOW_SIGN_UP: "false"
