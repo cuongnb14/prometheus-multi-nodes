@@ -1,0 +1,21 @@
+- name: Install pip3
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - python3-pip
+  
+- pip:
+    name: docker
+
+- name: Start nginxexporter container
+  docker_container:
+    name: nginxexporter
+    image: nginx/nginx-prometheus-exporter:0.8.0
+    restart_policy: always
+    networks:
+      - name: "traefik-net"
+    hostname: "{{ ansible_hostname }}"
+    ports:
+      - 9113:9113
+    command: ["-nginx.scrape-uri", "http://nginx:9300/status"]

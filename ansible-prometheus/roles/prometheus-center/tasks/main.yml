@@ -18,7 +18,7 @@
 - name: Ensures monitor-conf dir exists
   file: path=/monitor-conf/grafana state=directory recurse=yes
 
-- name: Sync bin directory
+- name: Sync grafana directory
   synchronize:
     src: ../templates/grafana
     dest: /monitor-conf
