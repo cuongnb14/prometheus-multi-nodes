@@ -16,12 +16,29 @@ scrape_configs:
   - job_name: 'nodeexporter'
     scrape_interval: 5s
     static_configs:
-      - targets: ['172.17.0.1:9100']
+{% if node_exporter_targets %}
+{% for target in node_exporter_targets %}
+      - targets: ['{{ target }}']
+{% endfor %}
+{% else %}
+{% for target in groups['exporter'] %}
+      - targets: ['{{ target[host]['ansible_eth0']['ipv4']['address'] }}:9100']
+{% endfor %}
+{% endif %}
+      
 
   - job_name: 'cadvisor'
     scrape_interval: 5s
     static_configs:
-      - targets: ['cadvisor:8080']
+{% if cadvisor_targets %}
+{% for target in cadvisor_targets %}
+      - targets: ['{{ target }}']
+{% endfor %}
+{% else %}
+{% for target in groups['exporter'] %}
+      - targets: ['{{ target[host]['ansible_eth0']['ipv4']['address'] }}:9200']
+{% endfor %}
+{% endif %}
 
   - job_name: 'prometheus'
     scrape_interval: 10s
