@@ -1,1 +1,2 @@
 ansible-prometheus/inventory.ini
+ansible-prometheus/play.yml
