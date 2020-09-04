@@ -13,6 +13,11 @@ rule_files:
 
 # A scrape configuration containing exactly one endpoint to scrape.
 scrape_configs:
+  - job_name: 'prometheus'
+    scrape_interval: 10s
+    static_configs:
+      - targets: ['localhost:9090']
+
   - job_name: 'nodeexporter'
     scrape_interval: 5s
     static_configs:
@@ -40,10 +45,14 @@ scrape_configs:
 {% endfor %}
 {% endif %}
 
-  - job_name: 'prometheus'
+{% if traefik_exporter_targets %}
+  - job_name: 'traefik'
     scrape_interval: 10s
     static_configs:
-      - targets: ['localhost:9090']
+{% for target in traefik_exporter_targets %}
+      - targets: ['{{ target }}']
+{% endfor %}
+{% endif %}
 
 {% if nginx_exporter_targets %}
   - job_name: 'nginx'
