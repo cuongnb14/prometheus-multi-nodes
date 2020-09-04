@@ -23,11 +23,13 @@
     src: ../templates/grafana
     dest: /monitor-conf
     checksum: yes
+  notify: Restart grafana
 
 - name: Create prometheus config file
   template:
     src: prometheus.yml.j2
     dest: /monitor-conf/prometheus/prometheus.yml
+  notify: Restart prometheus
 
 - name: Start prometheus container
   docker_container:

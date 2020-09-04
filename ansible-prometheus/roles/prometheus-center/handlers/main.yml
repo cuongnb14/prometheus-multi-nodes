@@ -1,0 +1,14 @@
+---
+- name: Restart prometheus
+  docker_container:
+    name: prometheus
+    image: quay.io/prometheus/prometheus:v2.20.1
+    state: started
+    restart: yes
+  
+- name: Restart grafana
+  docker_container:
+    name: grafana
+    image: grafana/grafana:7.1.5
+    state: started
+    restart: yes
