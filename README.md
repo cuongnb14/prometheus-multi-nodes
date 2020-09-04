@@ -1,4 +1,4 @@
-# Monitoring multi Hosts and Docker Containers
+# Monitoring Hosts and Docker Containers on multi hosts
 
 ## Information
 
@@ -30,3 +30,7 @@ docker-compose up -d
 ```
 
 Re-config `prometheus/prometheus.yml` in Center node
+
+## Setup with ansible:
+
+See in ansible-prometheus folder
