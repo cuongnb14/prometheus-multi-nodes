@@ -33,7 +33,7 @@ scrape_configs:
 {% endfor %}
 
 
-{% if groups['nginx'] %}
+{% if 'nginx' in groups %}
   - job_name: 'nginx'
     scrape_interval: 10s
     static_configs:
@@ -43,7 +43,7 @@ scrape_configs:
 {% endif %}
 
 
-{% if groups['traefik'] %}
+{% if 'traefik' in groups %}
   - job_name: 'traefik'
     scrape_interval: 10s
     static_configs:
