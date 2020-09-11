@@ -21,54 +21,49 @@ scrape_configs:
   - job_name: 'nodeexporter'
     scrape_interval: 5s
     static_configs:
-{% if node_exporter_targets %}
-{% for target in node_exporter_targets %}
-      - targets: ['{{ target }}']
-{% endfor %}
-{% else %}
 {% for target in groups['exporter'] %}
-      - targets: ['{{ target[host]['ansible_eth0']['ipv4']['address'] }}:9100']
+      - targets: ['{{ hostvars[target]['internal_ip'] }}:9100']
 {% endfor %}
-{% endif %}
       
-
   - job_name: 'cadvisor'
     scrape_interval: 5s
     static_configs:
-{% if cadvisor_targets %}
-{% for target in cadvisor_targets %}
-      - targets: ['{{ target }}']
-{% endfor %}
-{% else %}
 {% for target in groups['exporter'] %}
-      - targets: ['{{ target[host]['ansible_eth0']['ipv4']['address'] }}:9200']
+      - targets: ['{{ hostvars[target]['internal_ip'] }}:9200']
 {% endfor %}
-{% endif %}
 
-{% if traefik_exporter_targets %}
-  - job_name: 'traefik'
-    scrape_interval: 10s
-    static_configs:
-{% for target in traefik_exporter_targets %}
-      - targets: ['{{ target }}']
-{% endfor %}
-{% endif %}
 
-{% if nginx_exporter_targets %}
+{% if groups['nginx'] %}
   - job_name: 'nginx'
     scrape_interval: 10s
     static_configs:
-{% for target in nginx_exporter_targets %}
-      - targets: ['{{ target }}']
+{% for target in groups['nginx'] %}
+      - targets: ['{{ hostvars[target]['internal_ip'] }}:9300']
 {% endfor %}
 {% endif %}
 
+
+{% if groups['traefik'] %}
+  - job_name: 'traefik'
+    scrape_interval: 10s
+    static_configs:
+{% for target in groups['traefik'] %}
+      - targets: ['{{ hostvars[target]['internal_ip'] }}:9400']
+{% endfor %}
+{% endif %}
 
 #  - job_name: 'aspnetcore'
 #    scrape_interval: 10s
 #    static_configs:
 #      - targets: ['eventlog-proxy:5000', 'eventlog:5000']
 
+
+alerting:
+  alertmanagers:
+  - scheme: http
+    static_configs:
+    - targets: 
+      - 'alertmanager:9093'
 
 alerting:
   alertmanagers:
