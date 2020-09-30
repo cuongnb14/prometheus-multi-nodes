@@ -6,9 +6,6 @@
   roles:
     - { 
       role: prometheus-center,
-      node_exporter_targets: ["10.0.0.3:9100", "10.0.0.4:9100"],
-      cadvisor_targets: ["10.0.0.3:9200", "10.0.0.4:9200"],
-      nginx_exporter_targets: ["10.0.0.3:9113"],
     }
   
 - name: Setup Exporter servers
