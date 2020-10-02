@@ -23,5 +23,5 @@
       - name: "traefik-net"
     hostname: "{{ ansible_hostname }}"
     ports:
-      - "{{ hostvars[inventory_hostname].internal_ip }}9113:9113"
+      - "{{ hostvars[inventory_hostname].internal_ip }}:9300:9113"
     command: ["-nginx.scrape-uri", "http://nginx:9300/status"]
