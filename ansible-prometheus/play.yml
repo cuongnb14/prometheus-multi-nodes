@@ -8,16 +8,24 @@
       role: prometheus-center,
     }
   
-- name: Setup Exporter servers
-  hosts: exporter
+- name: Setup Node Exporter
+  hosts: node-exporter
   become: yes
   roles:
     - { 
-      role: prometheus-exporter,
+      role: node-exporter,
     }
 
-- name: Setup Nginx exporter servers
-  hosts: nginx
+- name: Setup Container Exporter
+  hosts: container-exporter
+  become: yes
+  roles:
+    - { 
+      role: node-exporter,
+    }
+
+- name: Setup Nginx Exporter
+  hosts: nginx-exporter
   become: yes
   roles:
     - { 

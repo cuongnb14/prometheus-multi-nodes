@@ -1,0 +1,30 @@
+- name: Update apt packages
+  become: true
+  apt:
+    update_cache: yes
+    cache_valid_time: 86400 # One day
+    
+- name: Install pip3
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - python3-pip
+  
+- pip:
+    name: docker
+
+- name: Start cadvisor container
+  docker_container:
+    name: cadvisor
+    image: gcr.io/google-containers/cadvisor:v0.36.0
+    restart_policy: always
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker:/var/lib/docker:ro
+      - /cgroup:/cgroup:ro # doesn't work on MacOS only for Linux
+    hostname: "{{ ansible_hostname }}"
+    ports:
+      - "{{ hostvars[inventory_hostname].internal_ip }}:9200:8080"

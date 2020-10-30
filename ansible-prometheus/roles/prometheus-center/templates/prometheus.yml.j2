@@ -12,28 +12,33 @@ rule_files:
   - "alert.rules"
 
 # A scrape configuration containing exactly one endpoint to scrape.
+# -----------------------------------------------------------------
+
 scrape_configs:
   - job_name: 'prometheus'
     scrape_interval: 10s
     static_configs:
       - targets: ['localhost:9090']
 
+{% if 'node-exporter' in groups %}  
   - job_name: 'nodeexporter'
     scrape_interval: 5s
     static_configs:
 {% for target in groups['exporter'] %}
       - targets: ['{{ hostvars[target]['internal_ip'] }}:9100']
 {% endfor %}
-      
+{% endif %}
+
+{% if 'container-exporter' in groups %}      
   - job_name: 'cadvisor'
     scrape_interval: 5s
     static_configs:
 {% for target in groups['exporter'] %}
       - targets: ['{{ hostvars[target]['internal_ip'] }}:9200']
 {% endfor %}
+{% endif %}
 
-
-{% if 'nginx' in groups %}
+{% if 'nginx-exporter' in groups %}
   - job_name: 'nginx'
     scrape_interval: 10s
     static_configs:
@@ -43,7 +48,7 @@ scrape_configs:
 {% endif %}
 
 
-{% if 'traefik' in groups %}
+{% if 'traefik-exporter' in groups %}
   - job_name: 'traefik'
     scrape_interval: 10s
     static_configs:
@@ -58,16 +63,9 @@ scrape_configs:
 #      - targets: ['eventlog-proxy:5000', 'eventlog:5000']
 
 
-alerting:
-  alertmanagers:
-  - scheme: http
-    static_configs:
-    - targets: 
-      - 'alertmanager:9093'
-
-alerting:
-  alertmanagers:
-  - scheme: http
-    static_configs:
-    - targets: 
-      - 'alertmanager:9093'
+# alerting:
+#   alertmanagers:
+#   - scheme: http
+#     static_configs:
+#     - targets: 
+#       - 'alertmanager:9093'
